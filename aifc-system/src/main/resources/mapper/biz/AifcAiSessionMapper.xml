@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aifc.system.mapper.biz.AifcAiSessionMapper">
+
+    <resultMap id="AifcAiSessionMap" type="com.aifc.system.domain.biz.AifcAiSession">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="systemPrompt" column="system_prompt"/>
+        <result property="lastMessage" column="last_message"/>
+        <result property="lastChatTime" column="last_chat_time"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <insert id="insertSession" parameterType="com.aifc.system.domain.biz.AifcAiSession" useGeneratedKeys="true" keyProperty="id">
+        insert into aifc_ai_session
+        (
+            title, system_prompt, last_message, last_chat_time, status,
+            create_by, create_time, update_by, update_time, remark
+        )
+        values
+        (
+            #{title}, #{systemPrompt}, #{lastMessage}, #{lastChatTime}, #{status},
+            #{createBy}, now(), #{updateBy}, now(), #{remark}
+        )
+    </insert>
+
+    <update id="updateSessionMeta" parameterType="com.aifc.system.domain.biz.AifcAiSession">
+        update aifc_ai_session
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="systemPrompt != null">system_prompt = #{systemPrompt},</if>
+            <if test="lastMessage != null">last_message = #{lastMessage},</if>
+            <if test="lastChatTime != null">last_chat_time = #{lastChatTime},</if>
+            <if test="status != null">status = #{status},</if>
+            update_by = #{updateBy},
+            update_time = now()
+        </set>
+        where id = #{id}
+          and create_by = #{createBy}
+    </update>
+
+    <select id="selectSessionByIdAndCreateBy" resultMap="AifcAiSessionMap">
+        select
+            id, title, system_prompt, last_message, last_chat_time, status,
+            create_by, create_time, update_by, update_time, remark
+        from aifc_ai_session
+        where id = #{id}
+          and create_by = #{createBy}
+          and status = 1
+    </select>
+
+    <select id="selectSessionListByCreateBy" resultMap="AifcAiSessionMap">
+        select
+            id, title, system_prompt, last_message, last_chat_time, status,
+            create_by, create_time, update_by, update_time, remark
+        from aifc_ai_session
+        where create_by = #{createBy}
+          and status = 1
+        order by ifnull(last_chat_time, create_time) desc, id desc
+    </select>
+
+    <update id="clearSessionsByCreateBy">
+        update aifc_ai_session
+        set status = 0,
+            update_by = #{updateBy},
+            update_time = now()
+        where create_by = #{createBy}
+          and status = 1
+    </update>
+
+</mapper>

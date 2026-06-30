@@ -1,0 +1,97 @@
+ruoyi:
+  name: RuoYi
+  version: 3.8.9
+  copyrightYear: 2025
+  profile: D:/ruoyi/uploadPath
+  addressEnabled: false
+  captchaType: math
+
+server:
+  port: 8082
+  servlet:
+    context-path: /
+  tomcat:
+    uri-encoding: UTF-8
+    accept-count: 1000
+    threads:
+      max: 800
+      min-spare: 100
+
+logging:
+  level:
+    com.aifc: debug
+    org.springframework: warn
+
+user:
+  password:
+    maxRetryCount: 5
+    lockTime: 10
+
+spring:
+  messages:
+    basename: i18n/messages
+  profiles:
+    active: druid
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+  devtools:
+    restart:
+      enabled: true
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    password:
+    timeout: 10s
+    lettuce:
+      pool:
+        min-idle: 0
+        max-idle: 8
+        max-active: 8
+        max-wait: -1ms
+
+token:
+  header: Authorization
+  secret: your-jwt-secret-key-at-least-32-chars
+  expireTime: 30
+
+mybatis:
+  typeAliasesPackage: com.aifc.**.domain
+  mapperLocations: classpath*:mapper/**/*Mapper.xml
+  configLocation: classpath:mybatis/mybatis-config.xml
+
+pagehelper:
+  helperDialect: mysql
+  supportMethodsArguments: true
+  params: count=countSql
+
+swagger:
+  enabled: true
+  pathMapping: /dev-api
+
+xss:
+  enabled: true
+  excludes: /system/notice
+  urlPatterns: /system/*,/monitor/*,/tool/*
+
+aifc:
+  ai:
+    enabled: true
+    api-key: your-dashscope-api-key
+    base-url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions
+    model: qwen-plus
+    temperature: 0.3
+    vision-model: qwen-vl-plus
+    max-tokens: 1024
+
+
+aliyun:
+  oss:
+    endpoint: https://oss-cn-beijing.aliyuncs.com
+    bucketName: your-bucket-name
+    accessKeyId: your-access-key-id
+    accessKeySecret: your-access-key-secret
+    dir: upload
+

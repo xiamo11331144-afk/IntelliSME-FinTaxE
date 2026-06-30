@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aifc.system.mapper.biz.SysCompanyMapper">
+
+    <resultMap id="SysCompanyResult" type="com.aifc.system.domain.biz.SysCompany">
+        <result property="companyId"    column="company_id"    />
+        <result property="companyName"  column="company_name"  />
+        <result property="industry"     column="industry"      />
+        <result property="taxpayerType" column="taxpayer_type" />
+        <result property="address"      column="address"       />
+        <result property="contact"      column="contact"       />
+        <result property="phone"        column="phone"         />
+        <result property="ownerUserId"  column="owner_user_id" />
+        <result property="createTime"   column="create_time"   />
+        <result property="updateTime"   column="update_time"   />
+    </resultMap>
+
+    <sql id="selectSysCompanyVo">
+        select company_id, company_name, industry, taxpayer_type, address,
+               contact, phone, owner_user_id, create_time, update_time
+        from sys_company
+    </sql>
+
+    <select id="selectSysCompanyById" parameterType="Long" resultMap="SysCompanyResult">
+        <include refid="selectSysCompanyVo"/>
+        where company_id = #{companyId}
+    </select>
+
+    <select id="selectSysCompanyList" parameterType="com.aifc.system.domain.biz.SysCompany" resultMap="SysCompanyResult">
+        <include refid="selectSysCompanyVo"/>
+        <where>
+            <if test="companyName != null and companyName != ''">and company_name like concat('%', #{companyName}, '%')</if>
+            <if test="industry != null and industry != ''">and industry = #{industry}</if>
+            <if test="taxpayerType != null">and taxpayer_type = #{taxpayerType}</if>
+            <if test="ownerUserId != null">and owner_user_id = #{ownerUserId}</if>
+            <if test="params.allowedCompanyIds != null and params.allowedCompanyIds.size() > 0">
+                and company_id in
+                <foreach item="cid" collection="params.allowedCompanyIds" open="(" separator="," close=")">
+                    #{cid}
+                </foreach>
+            </if>
+        </where>
+        order by company_id
+    </select>
+
+    <select id="selectSysCompanyByUserId" parameterType="Long" resultMap="SysCompanyResult">
+        select c.company_id, c.company_name, c.industry, c.taxpayer_type, c.address,
+               c.contact, c.phone, c.owner_user_id, c.create_time, c.update_time
+        from sys_company c
+        inner join sys_user_company uc on c.company_id = uc.company_id
+        where uc.user_id = #{userId}
+        order by c.company_id
+    </select>
+
+    <insert id="insertSysCompany" parameterType="com.aifc.system.domain.biz.SysCompany" useGeneratedKeys="true" keyProperty="companyId">
+        insert into sys_company
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="companyName != null and companyName != ''">company_name,</if>
+            <if test="industry != null and industry != ''">industry,</if>
+            <if test="taxpayerType != null">taxpayer_type,</if>
+            <if test="address != null and address != ''">address,</if>
+            <if test="contact != null and contact != ''">contact,</if>
+            <if test="phone != null and phone != ''">phone,</if>
+            <if test="ownerUserId != null">owner_user_id,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="companyName != null and companyName != ''">#{companyName},</if>
+            <if test="industry != null and industry != ''">#{industry},</if>
+            <if test="taxpayerType != null">#{taxpayerType},</if>
+            <if test="address != null and address != ''">#{address},</if>
+            <if test="contact != null and contact != ''">#{contact},</if>
+            <if test="phone != null and phone != ''">#{phone},</if>
+            <if test="ownerUserId != null">#{ownerUserId},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysCompany" parameterType="com.aifc.system.domain.biz.SysCompany">
+        update sys_company
+        <set>
+            <if test="companyName != null and companyName != ''">company_name = #{companyName},</if>
+            <if test="industry != null and industry != ''">industry = #{industry},</if>
+            <if test="taxpayerType != null">taxpayer_type = #{taxpayerType},</if>
+            <if test="address != null and address != ''">address = #{address},</if>
+            <if test="contact != null and contact != ''">contact = #{contact},</if>
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="ownerUserId != null">owner_user_id = #{ownerUserId},</if>
+            update_time = now(),
+        </set>
+        where company_id = #{companyId}
+    </update>
+
+    <delete id="deleteSysCompanyById" parameterType="Long">
+        delete from sys_company where company_id = #{companyId}
+    </delete>
+
+    <delete id="deleteSysCompanyByIds" parameterType="Long">
+        delete from sys_company where company_id in
+        <foreach item="companyId" collection="array" open="(" separator="," close=")">
+            #{companyId}
+        </foreach>
+    </delete>
+
+</mapper>

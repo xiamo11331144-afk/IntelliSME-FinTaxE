@@ -1,0 +1,244 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aifc.system.mapper.biz.BizTaxRiskMapper">
+
+    <resultMap id="BizTaxRiskResult" type="com.aifc.system.domain.biz.BizTaxRisk">
+        <result property="id" column="id" />
+        <result property="companyId" column="company_id" />
+        <result property="reportMonth" column="report_month" />
+        <result property="riskType" column="risk_type" />
+        <result property="riskLevel" column="risk_level" />
+        <result property="riskContent" column="risk_content" />
+        <result property="aiSuggestion" column="ai_suggestion" />
+        <result property="relatedIds" column="related_ids" />
+        <result property="status" column="status" />
+        <result property="handleRemark" column="handle_remark" />
+        <result property="createTime" column="create_time" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <sql id="selectBizTaxRiskVo">
+        select id, company_id, report_month, risk_type, risk_level, risk_content,
+               ai_suggestion, related_ids, status, handle_remark, create_time, update_time
+        from biz_tax_risk
+    </sql>
+
+    <select id="selectBizTaxRiskById" parameterType="Long" resultMap="BizTaxRiskResult">
+        <include refid="selectBizTaxRiskVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectBizTaxRiskList" parameterType="com.aifc.system.domain.biz.BizTaxRisk" resultMap="BizTaxRiskResult">
+        <include refid="selectBizTaxRiskVo"/>
+        <where>
+            <if test="companyId != null">and company_id = #{companyId}</if>
+            <if test="reportMonth != null and reportMonth != ''">and report_month = #{reportMonth}</if>
+            <if test="riskType != null and riskType != ''">and risk_type = #{riskType}</if>
+            <if test="riskLevel != null and riskLevel != ''">and risk_level = #{riskLevel}</if>
+            <if test="status != null">and status = #{status}</if>
+            <if test="params.allowedCompanyIds != null and params.allowedCompanyIds.size() > 0">
+                and company_id in
+                <foreach item="cid" collection="params.allowedCompanyIds" open="(" separator="," close=")">
+                    #{cid}
+                </foreach>
+            </if>
+        </where>
+        order by
+            case
+                when status = 0 then 0
+                when status = 1 then 1
+                when status = 2 then 2
+                else 3
+            end asc,
+            id desc
+    </select>
+
+    <insert id="insertBizTaxRisk" parameterType="com.aifc.system.domain.biz.BizTaxRisk" useGeneratedKeys="true" keyProperty="id">
+        insert into biz_tax_risk
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="companyId != null">company_id,</if>
+            <if test="reportMonth != null and reportMonth != ''">report_month,</if>
+            <if test="riskType != null and riskType != ''">risk_type,</if>
+            <if test="riskLevel != null and riskLevel != ''">risk_level,</if>
+            <if test="riskContent != null">risk_content,</if>
+            <if test="aiSuggestion != null">ai_suggestion,</if>
+            <if test="relatedIds != null and relatedIds != ''">related_ids,</if>
+            <if test="status != null">status,</if>
+            <if test="handleRemark != null and handleRemark != ''">handle_remark,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="companyId != null">#{companyId},</if>
+            <if test="reportMonth != null and reportMonth != ''">#{reportMonth},</if>
+            <if test="riskType != null and riskType != ''">#{riskType},</if>
+            <if test="riskLevel != null and riskLevel != ''">#{riskLevel},</if>
+            <if test="riskContent != null">#{riskContent},</if>
+            <if test="aiSuggestion != null">#{aiSuggestion},</if>
+            <if test="relatedIds != null and relatedIds != ''">#{relatedIds},</if>
+            <if test="status != null">#{status},</if>
+            <if test="handleRemark != null and handleRemark != ''">#{handleRemark},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBizTaxRisk" parameterType="com.aifc.system.domain.biz.BizTaxRisk">
+        update biz_tax_risk
+        <set>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="reportMonth != null and reportMonth != ''">report_month = #{reportMonth},</if>
+            <if test="riskType != null and riskType != ''">risk_type = #{riskType},</if>
+            <if test="riskLevel != null and riskLevel != ''">risk_level = #{riskLevel},</if>
+            <if test="riskContent != null">risk_content = #{riskContent},</if>
+            <if test="aiSuggestion != null">ai_suggestion = #{aiSuggestion},</if>
+            <if test="relatedIds != null">related_ids = #{relatedIds},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="handleRemark != null">handle_remark = #{handleRemark},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizTaxRiskById" parameterType="Long">
+        delete from biz_tax_risk where id = #{id}
+    </delete>
+
+    <delete id="deleteBizTaxRiskByIds" parameterType="Long">
+        delete from biz_tax_risk where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteBizTaxRiskByCompanyMonth" parameterType="com.aifc.system.domain.biz.BizTaxRisk">
+        delete from biz_tax_risk
+        where company_id = #{companyId}
+          and report_month = #{reportMonth}
+    </delete>
+
+    <select id="selectByCompanyMonthAndType" parameterType="com.aifc.system.domain.biz.BizTaxRisk" resultMap="BizTaxRiskResult">
+        <include refid="selectBizTaxRiskVo"/>
+        where company_id = #{companyId}
+          and report_month = #{reportMonth}
+          and risk_type = #{riskType}
+        limit 1
+    </select>
+
+    <delete id="deleteByCompanyMonthAndTypeNotIn" parameterType="com.aifc.system.domain.biz.BizTaxRisk">
+        delete from biz_tax_risk
+        where company_id = #{companyId}
+          and report_month = #{reportMonth}
+        <if test="params.riskTypes != null and params.riskTypes.size() > 0">
+          and risk_type not in
+          <foreach item="t" collection="params.riskTypes" open="(" separator="," close=")">
+              #{t}
+          </foreach>
+        </if>
+        <if test="params.riskTypes == null or params.riskTypes.size() == 0">
+          and 1 = 1
+        </if>
+    </delete>
+
+    <select id="selectRiskScanBase" parameterType="com.aifc.system.domain.biz.BizTaxRisk" resultType="java.util.HashMap">
+        select
+            mr.company_id as companyId,
+            mr.report_month as reportMonth,
+            mr.total_income as totalIncome,
+            mr.invoice_amount as invoiceAmount,
+            mr.tax_paid as taxPaid,
+            c.industry as industry,
+            it.vat_min as vatMin
+        from biz_month_report mr
+        left join sys_company c on c.company_id = mr.company_id
+        left join sys_industry_tax it on it.industry = c.industry
+        where mr.company_id = #{companyId}
+          and mr.report_month = #{reportMonth}
+        limit 1
+    </select>
+
+    <select id="countInvoiceTotal" parameterType="com.aifc.system.domain.biz.BizTaxRisk" resultType="int">
+        select count(1)
+        from biz_invoice
+        where company_id = #{companyId}
+          and report_month = #{reportMonth}
+    </select>
+
+    <select id="countInvoiceAbnormal" parameterType="com.aifc.system.domain.biz.BizTaxRisk" resultType="int">
+        select count(1)
+        from biz_invoice
+        where company_id = #{companyId}
+          and report_month = #{reportMonth}
+          and (is_integer = 1 or is_series = 1)
+    </select>
+
+    <select id="countVoucherPrivateMix" parameterType="com.aifc.system.domain.biz.BizTaxRisk" resultType="int">
+        select count(1)
+        from biz_voucher
+        where company_id = #{companyId}
+          and report_month = #{reportMonth}
+          and (
+              remark like '%备用金%'
+              or remark like '%股东借款%'
+              or remark like '%老板借款%'
+              or remark like '%私户%'
+              or remark like '%个人卡%'
+              or remark like '%现金货款%'
+          )
+    </select>
+
+    <select id="countZeroIncomeMonths" parameterType="com.aifc.system.domain.biz.BizTaxRisk" resultType="int">
+        select count(1)
+        from biz_month_report
+        where company_id = #{companyId}
+          and report_month &gt;= #{params.startMonth}
+          and report_month &lt;= #{reportMonth}
+          and ifnull(total_income, 0) = 0
+    </select>
+
+    <select id="selectInventoryRiskStats" parameterType="com.aifc.system.domain.biz.BizTaxRisk" resultType="java.util.HashMap">
+        select
+            ifnull(max(diff_rate), 0) as maxDiffRate,
+            ifnull(sum(abs(diff_amount)), 0) as totalDiffAmount
+        from biz_inventory
+        where company_id = #{companyId}
+          and report_month = #{reportMonth}
+    </select>
+
+    <select id="selectSalaryRiskStats" parameterType="com.aifc.system.domain.biz.BizTaxRisk" resultType="java.util.HashMap">
+        select
+            count(1) as totalCount,
+            ifnull(sum(case when is_5000 = 1 then 1 else 0 end), 0) as is5000Count,
+            count(distinct salary_amount) as distinctSalaryCount,
+            ifnull(sum(salary_amount), 0) as salaryTotal
+        from biz_salary
+        where company_id = #{companyId}
+          and report_month = #{reportMonth}
+    </select>
+
+    <select id="selectCompanyLatestMonths" resultType="java.util.HashMap">
+        select company_id as companyId, max(report_month) as reportMonth
+        from biz_month_report
+        group by company_id
+    </select>
+
+    <update id="handleRiskById" parameterType="com.aifc.system.domain.biz.BizTaxRisk">
+        update biz_tax_risk
+        set status = #{status},
+            handle_remark = #{handleRemark},
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <update id="handleRiskByIds" parameterType="com.aifc.system.domain.biz.BizTaxRisk">
+        update biz_tax_risk
+        set status = #{status},
+            handle_remark = #{handleRemark},
+            update_time = now()
+        where id in
+        <foreach item="id" collection="params.ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

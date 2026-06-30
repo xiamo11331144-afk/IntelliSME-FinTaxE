@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aifc.system.mapper.biz.BizMonthReportMapper">
+
+    <resultMap id="BizMonthReportResult" type="com.aifc.system.domain.biz.BizMonthReport">
+        <result property="id" column="id" />
+        <result property="companyId" column="company_id" />
+        <result property="reportMonth" column="report_month" />
+        <result property="totalIncome" column="total_income" />
+        <result property="totalCost" column="total_cost" />
+        <result property="taxPaid" column="tax_paid" />
+        <result property="invoiceAmount" column="invoice_amount" />
+        <result property="salaryTotal" column="salary_total" />
+        <result property="employeeCount" column="employee_count" />
+        <result property="inventoryAmount" column="inventory_amount" />
+        <result property="remark" column="remark" />
+        <result property="createTime" column="create_time" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <sql id="selectBizMonthReportVo">
+        select id, company_id, report_month, total_income, total_cost, tax_paid,
+               invoice_amount, salary_total, employee_count, inventory_amount, remark,
+               create_time, update_time
+        from biz_month_report
+    </sql>
+
+    <select id="selectBizMonthReportById" parameterType="Long" resultMap="BizMonthReportResult">
+        <include refid="selectBizMonthReportVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectBizMonthReportList" parameterType="com.aifc.system.domain.biz.BizMonthReport" resultMap="BizMonthReportResult">
+        <include refid="selectBizMonthReportVo"/>
+        <where>
+            <if test="companyId != null">and company_id = #{companyId}</if>
+            <if test="params.allowedCompanyIds != null and params.allowedCompanyIds.size() > 0">
+                and company_id in
+                <foreach item="cid" collection="params.allowedCompanyIds" open="(" separator="," close=")">
+                    #{cid}
+                </foreach>
+            </if>
+            <if test="reportMonth != null and reportMonth != ''">and report_month = #{reportMonth}</if>
+        </where>
+        order by report_month desc, id desc
+    </select>
+
+    <insert id="insertBizMonthReport" parameterType="com.aifc.system.domain.biz.BizMonthReport" useGeneratedKeys="true" keyProperty="id">
+        insert into biz_month_report
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="companyId != null">company_id,</if>
+            <if test="reportMonth != null and reportMonth != ''">report_month,</if>
+            <if test="totalIncome != null">total_income,</if>
+            <if test="totalCost != null">total_cost,</if>
+            <if test="taxPaid != null">tax_paid,</if>
+            <if test="invoiceAmount != null">invoice_amount,</if>
+            <if test="salaryTotal != null">salary_total,</if>
+            <if test="employeeCount != null">employee_count,</if>
+            <if test="inventoryAmount != null">inventory_amount,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="companyId != null">#{companyId},</if>
+            <if test="reportMonth != null and reportMonth != ''">#{reportMonth},</if>
+            <if test="totalIncome != null">#{totalIncome},</if>
+            <if test="totalCost != null">#{totalCost},</if>
+            <if test="taxPaid != null">#{taxPaid},</if>
+            <if test="invoiceAmount != null">#{invoiceAmount},</if>
+            <if test="salaryTotal != null">#{salaryTotal},</if>
+            <if test="employeeCount != null">#{employeeCount},</if>
+            <if test="inventoryAmount != null">#{inventoryAmount},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBizMonthReport" parameterType="com.aifc.system.domain.biz.BizMonthReport">
+        update biz_month_report
+        <set>
+            <if test="reportMonth != null and reportMonth != ''">report_month = #{reportMonth},</if>
+            <if test="totalIncome != null">total_income = #{totalIncome},</if>
+            <if test="totalCost != null">total_cost = #{totalCost},</if>
+            <if test="taxPaid != null">tax_paid = #{taxPaid},</if>
+            <if test="invoiceAmount != null">invoice_amount = #{invoiceAmount},</if>
+            <if test="salaryTotal != null">salary_total = #{salaryTotal},</if>
+            <if test="employeeCount != null">employee_count = #{employeeCount},</if>
+            <if test="inventoryAmount != null">inventory_amount = #{inventoryAmount},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizMonthReportById" parameterType="Long">
+        delete from biz_month_report where id = #{id}
+    </delete>
+
+    <delete id="deleteBizMonthReportByIds" parameterType="Long">
+        delete from biz_month_report where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

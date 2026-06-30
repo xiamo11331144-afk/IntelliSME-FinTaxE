@@ -1,0 +1,1 @@
+SELECT config_key, config_value FROM sys_config WHERE config_key = 'sys.account.captchaEnabled';

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aifc.system.mapper.biz.AifcDataScopeMapper">
+
+    <select id="selectAccessibleCompanyIds" parameterType="Long" resultType="Long">
+        select distinct company_id
+        from (
+            select suc.company_id as company_id
+            from sys_user_company suc
+            where suc.user_id = #{userId}
+            union all
+            select sc.company_id as company_id
+            from sys_company sc
+            where sc.owner_user_id = #{userId}
+        ) t
+    </select>
+
+</mapper>
+
