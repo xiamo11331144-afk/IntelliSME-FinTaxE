@@ -25,32 +25,30 @@
 ## 项目结构
 
 ```
-AIFC/                          # 后端 (Spring Boot)
-├── aifc-admin/                # 启动模块 (Controller、配置)
+AIFC/                          # 项目根目录
+├── aifc-admin/                # 后端启动模块 (Controller、配置)
 ├── aifc-system/               # 业务模块 (Domain、Service、Mapper)
 │   └── src/main/resources/mapper/biz/   # MyBatis XML
 ├── aifc-common/               # 公共工具 (BaseEntity、JWT、异常处理)
 ├── aifc-framework/            # 框架配置 (安全、拦截器)
 ├── sql/
-│   ├── aifc_stage1_init.sql   # 数据库表结构
-│   ├── aifc_menu_init.sql     # 菜单权限初始化
-│   └── aifc_demo_data.sql     # 演示数据
-└── pom.xml
-
-AIFC-Vue3-master/              # 前端 (Vue 3)
-├── src/
-│   ├── api/aifc/              # 业务 API
-│   ├── views/aifc/            # 业务页面 (8 个模块)
-│   ├── store/modules/         # Pinia 状态 (user / company / permission)
-│   ├── utils/
-│   │   ├── sse.js             # SSE 流式请求
-│   │   ├── markdown.js        # Markdown 渲染
-│   │   ├── export.js          # Excel/CSV 导出
-│   │   └── import.js          # Excel 导入
-│   └── components/BatchImport # 通用批量导入组件
-├── .env.development           # 开发环境变量
-├── .env.production            # 生产环境变量
-└── vite.config.js             # Vite 配置 (代理 → 8082)
+│   └── aifc.sql               # 数据库初始化脚本（表结构 + 菜单 + 演示数据）
+├── pom.xml                    # Maven 父 POM
+└── frontend/                  # 前端 (Vue 3)
+    ├── src/
+    │   ├── api/aifc/          # 业务 API
+    │   ├── views/aifc/        # 业务页面 (8 个模块)
+    │   ├── store/modules/     # Pinia 状态 (user / company / permission)
+    │   ├── utils/
+    │   │   ├── sse.js         # SSE 流式请求
+    │   │   ├── markdown.js    # Markdown 渲染
+    │   │   ├── export.js      # Excel/CSV 导出
+    │   │   └── import.js      # Excel 导入
+    │   └── components/BatchImport  # 通用批量导入组件
+    ├── .env.development       # 开发环境变量
+    ├── .env.production        # 生产环境变量
+    ├── .env.staging           # 预发布环境变量
+    └── vite.config.js         # Vite 配置 (代理 → 8082)
 ```
 
 ## 快速开始
@@ -67,9 +65,7 @@ AIFC-Vue3-master/              # 前端 (Vue 3)
 ```sql
 CREATE DATABASE aifc DEFAULT CHARSET utf8mb4;
 USE aifc;
-SOURCE sql/aifc_stage1_init.sql;
-SOURCE sql/aifc_menu_init.sql;
-SOURCE sql/aifc_demo_data.sql;   -- 可选：演示数据
+SOURCE sql/aifc.sql;
 ```
 
 ### 2. 后端配置
@@ -105,7 +101,7 @@ IDEA 打开 `AIFC` 项目，运行 `AifcApplication`，默认端口 `8082`。
 ### 4. 启动前端
 
 ```bash
-cd AIFC-Vue3-master
+cd frontend
 npm install
 npm run dev        # 开发模式，默认端口 80
 ```
@@ -137,7 +133,7 @@ Vite 代理已配置 `/dev-api` → `http://localhost:8082`。
 |---|---|---|
 | 管理员 | admin | admin123 |
 
-> 首次使用需执行 `aifc_menu_init.sql` 初始化菜单权限，执行 `aifc_demo_data.sql` 加载演示数据。
+> 首次使用需执行 `sql/aifc.sql` 初始化数据库（包含表结构、菜单权限和演示数据）。
 
 ## 许可证
 
