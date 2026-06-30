@@ -41,6 +41,7 @@ nbdist/
 .env
 .env.*
 !.env.example
+!frontend/.env.*
 *.pem
 *.key
 
